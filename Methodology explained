@@ -1,0 +1,30 @@
+First step  - Find pension data from the IRS 5500 forms. In the IRS website, data is published from 1999. The authors use 1990-1998 data however. 
+              For 1990-98 IRS forms the data can be found in this link - https://crr.bc.edu/data/form-5500-annual-reports/. 
+            - Datasets are gigantic - initial clean up in Excel is necessary to process the data in Python at a faster pace. Delete unnecessary columns. 
+              Columns used in the study are as follows - 'TYPE_PENSION_BENEFIT_IND', 'SPONS_DFE_EIN', 'SPONS_DFE_PN',
+              'CUSIP_ISSUER_NUM', 'TOT_ASSETS_BOY_AMT', 'TOT_LIABILITIES_BOY_AMT', 'TOT_ASSETS_EOY_AMT', 'TOT_LIABILITIES_EOY_AMT', 'TOT_CONTRIB_AMT',
+              'TOT_DISTRIB_BNFT_AMT'. 
+            - Authors do not make this explicit but these columns are used for the creation of the following variables 
+                  normal cost  = TOT_DISTRIB_BNFT_AMT
+                  total liabilities = TOT_LIABILITIES_BOY_AMT
+                  total assets = TOT_ASSETS_BOY_AMT
+                  total contributions = TOT_CONTRIB_AMT
+            - Each firms may sponsor more than one penison plan. SPONS_DFE_PN shows the unique number of each pension plan give the firm EIN - SPONS_DFE_EIN.
+
+Second step - Download Compustat files. The item list to download is attached in this working directory under compustat_variables.xslx name
+
+Third step = Match Compustat and IRS 5500 files year by year by CUSIP number. Authors indicate that they also used EIN and firm names while matching. But 
+             since they do not indicate how, I only use CUSIP for matching. 
+             
+Fourth step - Create DRC and MFC variables to determine Mandatory Contributions variable. Authors also consider 80 and 90% cut off point while calculating 
+              DRC. I skip that step due to the time limitations. I alo crease FS varible - which is the average of funding gap between assest and liabolities
+              of each pension plan. If a firm has one pension plan - average is straightforward. If a firm has more than one pension plan, FS is the average
+              over those pension plans. 
+
+Fifth step - I merge cross sectional data over years to create the panel. The panel is unbalanced and the sample size is (n * t) = 5424.
+             I suppose it is less than the author's sample because I did not match by EIN and Corporate Names. 
+
+Sixth step - report panel data estimates with fixed time and firm effects, and export descriptive statistics for the panel. 
+              
+              
+
