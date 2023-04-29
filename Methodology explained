@@ -1,30 +1,42 @@
-First step  - Find pension data from the IRS 5500 forms. In the IRS website, data is published from 1999. The authors use 1990-1998 data however. 
-              For 1990-98 IRS forms the data can be found in this link - https://crr.bc.edu/data/form-5500-annual-reports/. 
-            - Datasets are gigantic - initial clean up in Excel is necessary to process the data in Python at a faster pace. Delete unnecessary columns. 
-              Columns used in the study are as follows - 'TYPE_PENSION_BENEFIT_IND', 'SPONS_DFE_EIN', 'SPONS_DFE_PN',
-              'CUSIP_ISSUER_NUM', 'TOT_ASSETS_BOY_AMT', 'TOT_LIABILITIES_BOY_AMT', 'TOT_ASSETS_EOY_AMT', 'TOT_LIABILITIES_EOY_AMT', 'TOT_CONTRIB_AMT',
-              'TOT_DISTRIB_BNFT_AMT'. 
-            - Authors do not make this explicit but these columns are used for the creation of the following variables 
-                  normal cost  = TOT_DISTRIB_BNFT_AMT
-                  total liabilities = TOT_LIABILITIES_BOY_AMT
-                  total assets = TOT_ASSETS_BOY_AMT
-                  total contributions = TOT_CONTRIB_AMT
-            - Each firms may sponsor more than one penison plan. SPONS_DFE_PN shows the unique number of each pension plan give the firm EIN - SPONS_DFE_EIN.
+Methodology 
 
-Second step - Download Compustat files. The item list to download is attached in this working directory under compustat_variables.xslx name
+My replication of Bakke and Whited (2012) consists of six steps. 
 
-Third step = Match Compustat and IRS 5500 files year by year by CUSIP number. Authors indicate that they also used EIN and firm names while matching. But 
-             since they do not indicate how, I only use CUSIP for matching. 
-             
-Fourth step - Create DRC and MFC variables to determine Mandatory Contributions variable. Authors also consider 80 and 90% cut off point while calculating 
-              DRC. I skip that step due to the time limitations. I alo crease FS varible - which is the average of funding gap between assest and liabolities
-              of each pension plan. If a firm has one pension plan - average is straightforward. If a firm has more than one pension plan, FS is the average
-              over those pension plans. 
+1.	I find pension plans data from the Center for Retirement Research of Boston College.  The IRS 5500 forms are posted on the official IRS website starting from 1999. However, to be able to match with CUSIPs of the firms, the authors conduct the study with a sample spanning 1990 to 1998, and the data can be found on the above-mentioned website. 
+The IRS-5500 forms datasets are gigantic, and it requires deletion of many unnecessary columns for the study. The columns utilized in the study are as follows. 
 
-Fifth step - I merge cross sectional data over years to create the panel. The panel is unbalanced and the sample size is (n * t) = 5424.
-             I suppose it is less than the author's sample because I did not match by EIN and Corporate Names. 
+	'TYPE_PENSION_BENEFIT_IND' – shows if the pension plans are DB. 
+	'SPONS_DFE_EIN' – EIN of the firms. 
+	‘SPONS_DFE_PN' – number of the specific pension plan belong to the firm.
+	'CUSIP_ISSUER_NUM' – CUSIP number of the firm, used for matching. 
+            'TOT_ASSETS_BOY_AMT' – pension plan assets beginning of year (BoY)
+	'TOT_LIABILITIES_BOY_AMT' – pension liabilities BoY
+	'TOT_DISTRIB_BNFT_AMT' – normal cost of the plan
+	‘TOT_CONTRIB_AMT’ – total contributions to the plan
+            
+Each firm may sponsor more than one pension plan. SPONS_DFE_PN shows the unique number of each pension plan give the firm EIN – SPONS_DFE_EIN.
 
-Sixth step - report panel data estimates with fixed time and firm effects, and export descriptive statistics for the panel. 
-              
-              
+2.	I downloaded the Compustat files. The item list to download is attached in this working directory under compustat_variables.xslx name. 
+The Compustat files contain the firm specific variables, describing their market-to-book ratio, nonpension contributions, capital expenditures, 
+total assets, etc. 
 
+3.	Match Compustat and IRS 5500 files year by year by CUSIP number. Authors indicate that they also used EIN and firm names while matching. 
+But since they do not indicate how I only use CUSIP for matching. Almost all of the firms in IRS and Compustat data have EIN hence matching by EIN 
+would increase the sample size multiple times. However, without EIN matching, my sample size is only 70% of the authors’ sample size. Therefore, 
+I suppose authors matched with EIN under some circumstances. Since I do not know the circumstances, I used only CUSIPs. 
+
+4.	In order to determine the mandatory contributions, I created deficit reduction contribution (DRC) and minimum funding contribution (MFC) 
+variables following the author’s methodology on page 1093. Furthermore, I follow Rauh (2006) when creating Funding Status (FS) variable. 
+I average the funding gaps across the pension plans, thus getting a single average funding quantity per firm. 
+
+5.	I merge cross-sectional data over the years to create the panel. The panel is unbalanced, and the sample size is (n * t) = 5424. 
+I suppose it is less than the author's sample because I did not match EIN and Corporate Names. 
+
+6.	I report the panel data estimates with fixed time and firm effects and export descriptive statistics for the panel. I follow Rauh's 
+(2006) panel data estimation. Moreover, to understand the drivers of the results, I follow Bakke and Whited (2012) and report descriptive 
+statistics for varying subsamples. These subsamples contain the firms that are underfunded in their pension plan, meaning that pension 
+plan assets exceed liabilities. I further export the descriptive statistics for firms that are 90 and 80 percent underfunded. 
+
+A clear shortcoming in my approach is not matching firms also by EIN. The main problem is, in the sample, some firms did not provide CUSIP 
+numbers for some pension plans that they sponsor. As a result of my matching by only EIN, my sample sometimes contains only some pension 
+plans of the firms. Moreover, running the regression in some subsamples would help my method to clearly see where the identification coming from. 
